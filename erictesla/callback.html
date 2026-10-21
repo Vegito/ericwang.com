@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eric Tesla login</title>
+<style>
+  :root { --bg: #fcfcfb; --fg: #0b0b0b; --muted: #52514e; --accent: #b3261e; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1a1a19; --fg: #f0efec; --muted: #c3c2b7; --accent: #ff8a80; } }
+  body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 480px; margin: 0 auto; }
+  a.button { display: inline-block; padding: 12px 20px; border-radius: 10px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; }
+  code { word-break: break-all; background: rgba(128,128,128,.15); padding: 2px 6px; border-radius: 6px; }
+  p.muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Tesla login complete</h1>
+  <p id="status">Returning to the Eric Tesla app…</p>
+  <p><a id="open" class="button" href="#">Open Eric Tesla</a></p>
+  <p class="muted">If the app does not open, copy this and paste it into Settings &gt; Finish login:</p>
+  <p><code id="code"></code></p>
+</main>
+<script>
+  // Tesla redirects here with ?code=...&state=... ; hand both to the app through its own URL scheme.
+  (function () {
+    var q = window.location.search.replace(/^\?/, '');
+    var link = 'erictesla://callback?' + q;
+    var params = new URLSearchParams(q);
+    document.getElementById('open').href = link;
+    document.getElementById('code').textContent = params.get('code') ? window.location.href : 'No code in this address.';
+    if (params.get('error')) {
+      document.getElementById('status').textContent = 'Tesla reported: ' + params.get('error') + ' ' + (params.get('error_description') || '');
+      return;
+    }
+    if (params.get('code')) { window.location.href = link; }
+  })();
+</script>
+</body>
+</html>
